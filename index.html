@@ -70,6 +70,30 @@ File getJarFile() { ... }</code></pre></div></div></section></section>
 <div class="listingblock"><div class="content"><pre class="highlight"><code>gradle -t asciidoctor</code></pre></div></div></section>
 <section id="composite-builds"><h2>Composite builds</h2><div class="ulist"><ul><li><p><em>Compose</em> various projects as if there were one</p><div class="ulist"><ul><li><p>Each project can live in its own repository</p></li><li><p>Each project has its own Gradle build</p></li><li><p>Composition unites them through <em>dependency resolution</em></p></li></ul></div></li><li><p><em>Split</em> monolithic projects</p><div class="ulist"><ul><li><p>For large multiproject builds, allows splitting them into several pieces</p></li><li><p>Each piece can be versioned independently</p></li><li><p>Developers can <em>choose</em> what subprojects they care about</p></li></ul></div></li></ul></div></section>
 <section id="composite-builds-demo"><h2>Composite builds demo</h2></section>
+<section id="what-s-next"><h2>What&#8217;s next?</h2></section>
+<section><section id="compile-avoidance"><h2>Compile avoidance</h2></section><section id="usage"><h2>Usage</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">import com.acme.model.Person;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+
+...
+
+public Set&lt;String&gt; getNames(Set&lt;Foo&gt; persons) {
+   return ImmutableSet.copyOf(Iterables.transform(persons, TO_NAME))
+}</code></pre></div></div></section><section id="declaring-dependencies"><h2>Declaring dependencies</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="groovy language-groovy">dependencies {
+   compile project(':model')
+   compile 'com.google.guava:guava:18.0'
+}</code></pre></div></div></section><section id="but"><h2>But&#8230;&#8203;</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">import com.acme.model.Person; // exported dependency
+import com.google.common.collect.ImmutableSet; // internal dependency
+import com.google.common.collect.Iterables; // internal dependency
+
+...
+
+public Set&lt;String&gt; getNames(Set&lt;Foo&gt; persons) {
+   return ImmutableSet.copyOf(Iterables.transform(persons, TO_NAME))
+}</code></pre></div></div></section><section id="separating-api-from-implementation"><h2>Separating API from implementation</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="groovy language-groovy">dependencies {
+   api project(':model')
+   implementation 'com.google.guava:guava:18.0'
+}</code></pre></div></div></section><section id="benefit"><h2>Benefit</h2><div class="ulist"><ul><li><p>No more compile classpath leakage</p></li><li><p>Downstream dependencies not recompiled when internal dependency changes</p></li></ul></div></section></section>
 <section id="build-cache"><h2>Build cache</h2><div class="ulist"><ul><li><p>Avoid doing work even after <em>clean</em></p></li><li><p>Share binaries between projects on a single machine</p></li><li><p>Share binaries between projects on a network</p></li><li><p>Backend agnostic</p></li></ul></div></section>
 <section id="build-cache-use-cases"><h2>Build cache use cases</h2><div class="ulist"><ul><li><p>Long compile tasks</p></li><li><p>Bisecting</p></li><li><p>Continuous integration</p></li><li><p>Green Earth ;)</p></li></ul></div></section>
 <section id="task-output-cache-demo"><h2>Task output cache demo</h2></section>
